@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cumpleaños de Aron V2</title>
+    
+    <style>
+        :root {
+            /* Paleta de Colores mejorada */
+            --color-thomas-blue: #005eb8; /* Azul un poco más intenso */
+            --color-sky-blue: #cae8fc;    /* Cielo más celeste */
+            --color-cars-red: #e41d22;    /* Rojo vibrante Cars */
+            --color-lightning-yellow: #fecb00; /* Amarillo Rayo */
+            --color-text: #2c3e50;
+            --font-main: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--color-sky-blue);
+            color: var(--color-text);
+            overflow-x: hidden;
+            padding-bottom: 50px;
+            /* Un ligero degradado en el fondo del cuerpo */
+            background-image: linear-gradient(to bottom, #cae8fc 0%, #ecf6ff 100%);
+        }
+
+        /* --- Contenedor Principal --- */
+        .container {
+            max-width: 420px; /* Un poco más estrecho para asegurar look móvil */
+            margin: 0 auto;
+            position: relative;
+            padding: 20px 15px;
+            z-index: 5; /* Asegurar que el contenido esté sobre los globos */
+        }
+
+        /* --- Animación de Entrada (Pantalla de Carga) --- */
+        .intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--color-thomas-blue);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            transition: transform 0.8s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+
+        .intro-screen.slide-up {
+            transform: translateY(-100%);
+        }
+
+        .intro-icon {
+            font-size: 5rem;
+            animation: introBounce 1s infinite alternate;
+        }
+
+        /* --- Encabezado e Imágenes de Personajes --- */
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            margin-top: 10px;
+        }
+
+        /* Contenedor para la imagen de Tomás */
+        .thomas-container {
+            width: 180px;
+            height: 180px;
+            margin: 0 auto 15px auto;
+            position: relative;
+        }
+
+        /* Estilo de la imagen del personaje principal */
+        .char-img-main {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.2));
+            /* Animación de tambaleo suave (como un tren) */
+            animation: gentleChug 2s ease-in-out infinite;
+        }
+
+        h1 {
+            color: var(--color-cars-red);
+            font-size: 2.8rem;
+            text-transform: uppercase;
+            /* Sombra de texto doble para efecto de cómic */
+            text-shadow: 3px 3px 0px var(--color-lightning-yellow), -1px -1px 0 var(--color-text);
+            line-height: 1;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .age-badge {
+            background: var(--color-thomas-blue);
+            color: var(--color-lightning-yellow);
+            display: inline-block;
+            padding: 8px 25px;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            box-shadow: 0 6px 0px #003c75; /* Sombra sólida 3D */
+            transform: rotate(-3deg);
+            border: 3px solid var(--color-lightning-yellow);
+        }
+
+        /* --- Tarjetas de Información (Estilo Rieles) --- */
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+            position: relative;
+            border: 3px solid var(--color-thomas-blue);
+            box-shadow: 0 8px 0 rgba(0,0,0,0.1); /* Sombra sólida suave */
+            
+            /* Estado inicial para scroll reveal */
+            opacity: 0;
+            transform: translateY(40px) scale(0.9);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .card.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        
+        /* Decoración tipo riel arriba y abajo de las tarjetas */
+        .card::before, .card::after {
+            content: '';
+            position: absolute;
+            left: 10%;
+            width: 80%;
+            height: 6px;
+            background-image: repeating-linear-gradient(90deg, var(--color-text) 0, var(--color-text) 10px, transparent 10px, transparent 20px);
+            opacity: 0.2;
+        }
+        .card::before { top: 5px; }
+        .card::after { bottom: 5px; }
+
+        .card-icon {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 5px;
+            /* Sombra al icono para que resalte */
+            filter: drop-shadow(2px 2px 0px var(--color-lightning-yellow));
+        }
+
+        .card h2 {
+            color: var(--color-thomas-blue);
+            margin-bottom: 12px;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            font-weight: 800;
+        }
+
+        .data-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .highlight-red {
+            color: var(--color-cars-red);
+            font-weight: 900;
+            font-size: 1.3rem;
+        }
+
+        /* --- Imagen secundaria (Cars) --- */
+        .cars-decoration {
+            position: absolute;
+            bottom: -20px;
+            right: -10px;
+            width: 80px;
+            z-index: 10;
+            /* Animación de motor vibrando */
+            animation: engineRev 1s linear infinite;
+        }
+
+        /* --- Lista de Actividades --- */
+        .activity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* Dos columnas */
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .activity-item {
+            background: var(--color-lightning-yellow);
+            color: var(--color-text);
+            padding: 10px 5px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            border: 2px solid var(--color-cars-red);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* --- Botones de Contacto --- */
+        .btn-contact {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border-radius: 50px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+            font-size: 1rem;
+        }
+
+        .btn-contact:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .btn-mom { background: linear-gradient(to right, #25D366, #128C7E); }
+        .btn-dad { background: linear-gradient(to right, var(--color-thomas-blue), #003c75); }
+        
+        .btn-icon { font-size: 1.5rem; margin-right: 10px; }
+        .btn-text small { display: block; opacity: 0.9; font-weight: normal;}
+
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--color-thomas-blue);
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 20px 20px 0 0;
+        }
+
+        /* --- NUEVOS GLOBOS FLOTANTES (V2) --- */
+        .balloon-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1; /* Detrás del contenido */
+            pointer-events: none;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -100px; /* Empiezan debajo de la pantalla */
+            width: 40px;
+            height: 50px;
+            border-radius: 50%;
+            /* El color se define en JS */
+            box-shadow: inset -3px -3px 10px rgba(0,0,0,0.1), 2px 2px 5px rgba(0,0,0,0.1);
+            animation: floatUp linear infinite;
+        }
+
+        /* El nudo del globo */
+        .balloon::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid inherit; /* Hereda el color del globo padre */
+        }
+
+        /* --- Keyframes de Animación V2 --- */
+        @keyframes introBounce {
+            from { transform: translateY(0) scale(1); }
+            to { transform: translateY(-20px) scale(1.1); }
+        }
+
+        /* Animación del tren (tambaleo suave) */
+        @keyframes gentleChug {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            25% { transform: translateY(-3px) rotate(-1.5deg); }
+            75% { transform: translateY(-3px) rotate(1.5deg); }
+        }
+
+        /* Animación del auto (vibración de motor) */
+        @keyframes engineRev {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(1px, 1px); }
+            50% { transform: translate(0, -1px); }
+            75% { transform: translate(-1px, 0); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* Animación de los globos subiendo */
+        @keyframes floatUp {
+            0% { transform: translateY(0) translateX(0); opacity: 0.9;}
+            50% { transform: translateY(-50vh) translateX(20px); }
+            100% { transform: translateY(-110vh) translateX(-10px); opacity: 0; }
+        }
+        .invite-text {
+    margin-top: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-thomas-blue);
+}
+
+    </style>
+</head>
+<body>
+
+    <div id="intro-screen" class="intro-screen">
+        <div class="intro-icon">🚂💨</div>
+        <p style="margin-top: 20px; font-weight: bold;">Cargando diversión...</p>
+    </div>
+
+    <div id="balloon-container" class="balloon-container"></div>
+
+    <div class="container">
+        
+        <header>
+            <div class="thomas-container scroll-reveal">
+                <img src="pngwing.com.png" alt="Tren Tomás" class="char-img-main">
+            </div>
+            
+            <h1 id="hero-name"></h1>
+            <div class="age-badge scroll-reveal">¡Cumplo <span id="hero-age"></span> años! 🎂</div>
+            <p class="invite-text">¡Te invito a celebrar mi cumpleaños! 🎉</p>
+
+        </header>
+
+        <section class="card scroll-reveal">
+            <span class="card-icon">📅</span>
+            <h2>¿Cuándo?</h2>
+            <p id="event-date" class="data-text"></p>
+            <p id="event-time" class="highlight-red"></p>
+        </section>
+
+        <section class="card scroll-reveal" style="border-color: var(--color-cars-red);">
+             <img src="pngwin.png" style="width: 50px; position: absolute; top:-25px; right: -10px; filter: drop-shadow(2px 2px 0px yellow);" alt="Rueda decorativa">
+
+            <span class="card-icon">
+                📍
+            </span>
+            <span>
+                <img src="casa.jpg" style="width: 100px; position: relative; top: -10;  left: 10px; border-radius: 30px ;" alt="Rueda decorativa">
+
+            </span>
+            <h2>¿Dónde?</h2>
+            <p id="event-location" class="data-text" style="font-weight: 900;"></p>
+            <p style="font-size: 0.9rem; margin-top: 10px; background: var(--color-lightning-yellow); display: inline-block; padding: 2px 10px; border-radius: 4px;">(Sigue las señales de Cars 🏎️)</p>
+        </section>
+
+        <section class="card scroll-reveal" style="background: #fffdeb;">
+            <span class="card-icon">🎪</span>
+            <h2>¡Súper Diversión!</h2>
+            <div id="activities-container" class="activity-grid">
+                </div>
+        </section>
+
+        <section class="card scroll-reveal">
+            <span class="card-icon">📱</span>
+            <h2>Confirma tu asistencia</h2>
+            <p style="margin-bottom: 15px; font-size: 0.9rem;">Toca un botón para avisar por WhatsApp:</p>
+            
+            <a id="btn-mom" href="#" class="btn-contact btn-mom">
+                <span class="btn-icon">👩</span>
+                <div class="btn-text">Daniela (Mamá)<small id="tel-mom"></small></div>
+            </a>
+            <a id="btn-dad" href="#" class="btn-contact btn-dad">
+                <span class="btn-icon">👨</span>
+                <div class="btn-text">Víctor (Papá)<small id="tel-dad"></small></div>
+            </a>
+        </section>
+
+        <footer>
+            <p style="font-weight: bold; font-size: 1rem;">“Iniciativa preparada por sus padres y sus abuelos”</p>
+            <br>
+            <p>🎈 ¡Te esperamos en la meta! 🏁</p>
+        </footer>
+
+    </div>
+
+    <script>
+        const invitacionData = {
+            festejado: { nombre: "Aron", edad: 6 },
+            evento: {
+                fecha: "Sábado 24 de Enero",
+                hora: "Desde las 14:00 hrs",
+                lugar: "Domicilio – Encanto Pampa"
+            },
+            actividades: [
+                "🤡 Payasito", "🩰 Bailarina", "🔊 Música", "🫧 Burbujas", 
+                "🎈 Globoflexia", "🏆 Concursos", "🪅 Piñata", "🎁 Regalos"
+            ],
+            contacto: {
+                madre: { nombre: "Daniela", telefono: "68429183" },
+                padre: { nombre: "Víctor", telefono: "" }
+            }
+        };
+
+        function cargarDatos() {
+            // Datos básicos
+            document.getElementById('hero-name').textContent = invitacionData.festejado.nombre;
+            document.getElementById('hero-age').textContent = invitacionData.festejado.edad;
+            document.getElementById('event-date').textContent = invitacionData.evento.fecha;
+            document.getElementById('event-time').textContent = invitacionData.evento.hora;
+            document.getElementById('event-location').textContent = invitacionData.evento.lugar;
+
+            // Actividades (en cuadrícula)
+            const gridActividades = document.getElementById('activities-container');
+            invitacionData.actividades.forEach(act => {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.textContent = act;
+                gridActividades.appendChild(item);
+            });
+
+            // Botones de WhatsApp
+            const msj = `¡Hola! Confirmo asistencia para el cumple de ${invitacionData.festejado.nombre} 🚂🏎️`;
+            
+            document.getElementById('btn-mom').href = `https://wa.me/591${invitacionData.contacto.madre.telefono}?text=${encodeURIComponent(msj)}`;
+            document.getElementById('tel-mom').textContent = invitacionData.contacto.madre.telefono;
+            
+            document.getElementById('btn-dad').href = `https://wa.me/591${invitacionData.contacto.padre.telefono}?text=${encodeURIComponent(msj)}`;
+            document.getElementById('tel-dad').textContent = invitacionData.contacto.padre.telefono;
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatos();
+
+            // 1. Quitar pantalla de carga
+            setTimeout(() => {
+                document.getElementById('intro-screen').classList.add('slide-up');
+            }, 1500);
+
+            // 2. Scroll Reveal (Aparición suave al bajar)
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // Agrega 'visible' cuando entra en pantalla, no lo quita al salir
+                    if (entry.isIntersecting) entry.target.classList.add('visible');
+                });
+            }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" }); // Margen inferior para que anime antes de llegar abajo
+
+            document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+
+            // 3. Crear Globos flotantes V2
+            crearGlobos(18); // Número de globos
+        });
+
+        function crearGlobos(cantidad) {
+            const container = document.getElementById('balloon-container');
+            // Colores de la paleta para los globos
+            const colores = ['var(--color-thomas-blue)', 'var(--color-cars-red)', 'var(--color-lightning-yellow)'];
+
+            for (let i = 0; i < cantidad; i++) {
+                const balloon = document.createElement('div');
+                balloon.classList.add('balloon');
+                
+                // Color aleatorio
+                const colorRandom = colores[Math.floor(Math.random() * colores.length)];
+                balloon.style.backgroundColor = colorRandom;
+                balloon.style.borderTopColor = colorRandom; // Para el nudo
+
+                // Tamaño, posición y velocidad aleatoria
+                const size = Math.random() * 25 + 30 + 'px'; // Entre 30 y 55px
+                balloon.style.width = size;
+                balloon.style.height = parseFloat(size) * 1.2 + 'px'; // Un poco más altos que anchos
+                
+                balloon.style.left = Math.random() * 90 + 'vw'; // Posición horizontal
+                
+                const duration = Math.random() * 10 + 10 + 's'; // Entre 10 y 20s (lento)
+                balloon.style.animationDuration = duration;
+                balloon.style.animationDelay = Math.random() * 10 + 's'; // Retraso inicial
+
+                container.appendChild(balloon);
+            }
+        }
+    </script>
+</body>
+</html>
